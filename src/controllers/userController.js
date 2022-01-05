@@ -207,4 +207,5 @@ let updateUser = async function(req, res){
     }
 }
 
+
 module.exports = {createUser,login,getUser,updateUser}

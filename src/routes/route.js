@@ -13,3 +13,4 @@ router.get('/user/:userId/profile',midVerify.varifyUser, userController.getUser)
 router.put('/user/:userId/profile',midVerify.varifyUser, userController.updateUser)
 
 module.exports = router;
+
