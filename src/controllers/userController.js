@@ -2,10 +2,8 @@ let userModel = require('../models/userModel')
 const validate = require('../validators/validator')
 let bcryptjs = require('bcryptjs')
 let jwt = require("jsonwebtoken");
-const { isValidObjectId } = require('mongoose');
-const { findOne } = require('../models/userModel');
 
-//api for create User-->Localhost:3000/register
+//api for create User-->Localhost:3000/register                   todo validation for phone = null
 let createUser = async function(req,res){
     try{
         let reqBody = req.body
@@ -45,14 +43,16 @@ let createUser = async function(req,res){
 
         //Validation for Phone Nymber
         
-        phone = phone.trim()
-        if(!/^(\+91[\-\s]?)?[0]?(91)?[6789]\d{9}$/.test(phone)){
-            return res.status(400).send({status: false, message: `${phone} is not a valid phone Number. Please provise valid Phone Number!!`})
-        }
+        if(Object.prototype.hasOwnProperty.call(reqBody,'phone')){
+            
+            if(!/^(\+91[\-\s]?)?[0]?(91)?[6789]\d{9}$/.test(phone)){
+                return res.status(400).send({status: false, message: `${phone} is not a valid phone Number. Please provise valid Phone Number!!`})
+            }
 
-        let isPhoneNumberAlreadyUsed = await userModel.findOne({phone: phone})
-        if(isPhoneNumberAlreadyUsed){
-            return res.status(400).send({status: false, message: `${phone} is already registered. Please provide unique Phone Number!!`})
+            let isPhoneNumberAlreadyUsed = await userModel.findOne({phone: phone})
+            if(isPhoneNumberAlreadyUsed ){
+                return res.status(400).send({status: false, message: `${phone} is already registered. Please provide unique Phone Number!!`})
+            }
         }
 
         //Validation for Password
@@ -101,7 +101,7 @@ let login = async function(req, res){
                 return;
             }
 
-            if (!validate.isValid(password)) {
+            if (!validate.isValid(password)){
                 return res.status(400).send({ status: false, message: `Password is required` });
             }
             // Validation ends
@@ -206,6 +206,7 @@ let updateUser = async function(req, res){
         res.status(401).send({status: false, message: "Unauthorised User!!"})
     }
 }
+
 
 
 module.exports = {createUser,login,getUser,updateUser}
